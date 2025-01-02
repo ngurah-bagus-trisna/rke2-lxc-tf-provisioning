@@ -1,0 +1,27 @@
+# Ignore Terraform state files
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ignore auto-generated variable files
+#*.auto.tfvars
+
+# Ignore Terraform plan files
+*.tfplan
+
+# Ignore crash logs
+crash.log
+
+# Ignore override files as they are usually not included in version control
+override.tf
+override.tf.json
+*.override.tf
+*.override.tf.json
+
+# Ignore sensitive files
+credentials.tfvars
+*.pem
+*.key
+
+# Ignore directories created by Terraform
+.terraform/
+.terraform.lock.hcl
