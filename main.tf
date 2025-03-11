@@ -1,8 +1,3 @@
-resource "remove_net" "rke_net_remove" {
-  provisioner "local-exec" {
-    command = "lxc network delete rke-net"
-  }
-}
 
 resource "lxd_network" "rke-net" {
   name = "rke-net"
