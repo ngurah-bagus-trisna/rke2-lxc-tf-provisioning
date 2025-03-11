@@ -36,10 +36,6 @@ resource "lxd_profile" "rke_profile" {
       size = each.value.disk
     }
   }
-
-  lifecycle {
-    prevent_destroy = true  # Hindari penghapusan otomatis saat destroy
-  }
 }
 
 resource "lxd_instance" "rke_container" {
@@ -65,16 +61,13 @@ resource "lxd_instance" "rke_container" {
   }
 }
 
-# Guard untuk menghapus profile setelah VM dihancurkan
-resource "null_resource" "profile_cleanup" {
+# Hapus profile setelah VM dihapus
+resource "lxd_profile" "rke_profile_cleanup" {
   depends_on = [ lxd_instance.rke_container ]
-  provisioner "local-exec" {
-    when = destroy
-    command = <<EOT
-    for profile in $(echo '${jsonencode(keys(var.rke_profiles))}' | jq -r '.[]'); do
-      echo "Deleting profile: $profile"
-      lxc profile delete $profile || true
-    done
-    EOT
+  for_each = {
+    for profile in var.rke_profiles :
+    profile.name => profile.limits
   }
+
+  name = each.key
 }
