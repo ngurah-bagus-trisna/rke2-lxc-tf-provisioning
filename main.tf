@@ -9,13 +9,13 @@ resource "lxd_network" "rke-net" {
     "ipv6.nat"     = "false"
   }
   provisioner "local-exec" {
-    command = "sudo firewall-cmd --add-interface=rke-net --zone=libvirt-routed --permanent"
+    command = "sudo firewall-cmd --add-interface=rke-net --zone=libvirt-routed --permanent && sudo firewall-cmd --reload"
   }
 }
 
 
 resource "lxd_profile" "rke_profile" {
-
+  depends_on = [ lxd_network.rke-net ]
   for_each = {
     for index, profile in var.rke_profiles :
     profile.name => profile.limits
@@ -44,7 +44,8 @@ resource "lxd_profile" "rke_profile" {
 
 resource "lxd_instance" "rke_container" {
   depends_on = [ 
-    lxd_profile.rke_profile
+    lxd_profile.rke_profile,
+    lxd_network.rke-net
   ]
 
   for_each = {
