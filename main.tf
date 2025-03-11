@@ -1,9 +1,8 @@
-
 resource "lxd_network" "rke-net" {
   name = "rke-net"
   type = "bridge"
   config = {
-    "ipv4.address" = "${var.ip_network}"
+    "ipv4.address" = var.ip_network
     "ipv4.nat"     = "true"
     "ipv6.address" = "none"
     "ipv6.nat"     = "false"
@@ -13,11 +12,10 @@ resource "lxd_network" "rke-net" {
   }
 }
 
-
 resource "lxd_profile" "rke_profile" {
   depends_on = [ lxd_network.rke-net ]
   for_each = {
-    for index, profile in var.rke_profiles :
+    for profile in var.rke_profiles :
     profile.name => profile.limits
   }
 
@@ -32,7 +30,6 @@ resource "lxd_profile" "rke_profile" {
   device {
     type = "disk"
     name = "root"
-
     properties = {
       pool = "nb-pool-zfs"
       path = "/"
@@ -40,52 +37,44 @@ resource "lxd_profile" "rke_profile" {
     }
   }
 
+  lifecycle {
+    prevent_destroy = true  # Hindari penghapusan otomatis saat destroy
+  }
 }
 
 resource "lxd_instance" "rke_container" {
-  depends_on = [ 
-    lxd_profile.rke_profile,
-    lxd_network.rke-net
-  ]
+  depends_on = [ lxd_profile.rke_profile, lxd_network.rke-net ]
 
   for_each = {
-    for index, container in var.rke_container :
+    for container in var.rke_container :
     container.name => container
   }
 
   name = each.key
   image = var.rke_image
   type = "virtual-machine"
-  profiles = [
-    each.value.profile
-  ]
+  profiles = [ each.value.profile ]
 
   device {
     name = "ens3"
     type = "nic"
     properties = {
       network = "rke-net"
-      "ipv4.address" = "${each.value.ip}"
+      "ipv4.address" = each.value.ip
     }
   }
-
 }
 
-# Gunakan lifecycle agar Terraform tidak langsung menghapus profile sebelum VM dihapus
-resource "null_resource" "destroy_guard" {
-  depends_on = [ lxd_instance.rke_container ]  # Pastikan VM dihapus dulu
+# Guard untuk menghapus profile setelah VM dihancurkan
+resource "null_resource" "profile_cleanup" {
+  depends_on = [ lxd_instance.rke_container ]
   provisioner "local-exec" {
-    command = "echo 'All VMs destroyed, safe to remove profiles'"
-  }
-}
-
-resource "lxd_profile" "rke_profile_cleanup" {
-  depends_on = [ null_resource.destroy_guard ]  # Hapus profile setelah VM
-  for_each = lxd_profile.rke_profile
-
-  name = each.key
-
-  lifecycle {
-    prevent_destroy = false
+    when = destroy
+    command = <<EOT
+    for profile in $(echo '${jsonencode(keys(var.rke_profiles))}' | jq -r '.[]'); do
+      echo "Deleting profile: $profile"
+      lxc profile delete $profile || true
+    done
+    EOT
   }
 }
