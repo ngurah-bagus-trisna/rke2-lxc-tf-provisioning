@@ -1,0 +1,30 @@
+name: Terraform Auto Deploy
+
+on:
+  push:
+    branches:
+      - main  # Sesuaikan dengan branch yang ingin Anda trigger
+
+jobs:
+  deploy-lab:
+    runs-on: ubuntu-latest
+    env: 
+      USER: ${{ secrets.SSH_USERNAME }}
+      HOST: ${{ secrets.SSH_HOST }}
+      REPO_NAME: ${{ vars.REPO_NAME }}
+    steps:
+    - name: clone to lab
+      uses: and-fm/cloudflared-ssh-action@v3
+      with:
+        host: ${{ env.HOST }}
+        username: ${{ env.USER }}
+        private_key_value: ${{ env.SSH_PRIVATE_KEY_VALUE }}
+        commands: |
+          cd /home/${{ env.USER }}/lab-rke/
+          tofu destroy -auto-approve
+          rm -rf /home/${{ env.USER }}/lab-rke && mkdir /home/${{ env.USER }}/lab-rke
+          cd /home/${{ env.USER }}/lab-rke
+          git clone ${{ github.server_url }}/${{ github.repository }}.git
+          cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}
+          tofu init 
+          tofu apply -auto-approve
