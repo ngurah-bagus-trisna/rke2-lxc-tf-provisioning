@@ -1,3 +1,9 @@
+resource "remove_net" "rke_net_remove" {
+  provisioner "local-exec" {
+    command = "lxc network delete rke-net"
+  }
+}
+
 resource "lxd_network" "rke-net" {
   name = "rke-net"
   type = "bridge"
@@ -59,15 +65,4 @@ resource "lxd_instance" "rke_container" {
       "ipv4.address" = each.value.ip
     }
   }
-}
-
-# Hapus profile setelah VM dihapus
-resource "lxd_profile" "rke_profile_cleanup" {
-  depends_on = [ lxd_instance.rke_container ]
-  for_each = {
-    for profile in var.rke_profiles :
-    profile.name => profile.limits
-  }
-
-  name = each.key
 }
