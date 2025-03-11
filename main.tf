@@ -8,7 +8,11 @@ resource "lxd_network" "rke-net" {
     "ipv6.address" = "none"
     "ipv6.nat"     = "false"
   }
+  provisioner "local-exec" {
+    command = "sudo firewall-cmd --add-interface=rke-net --zone=libvirt-routed --permanent"
+  }
 }
+
 
 resource "lxd_profile" "rke_profile" {
 
