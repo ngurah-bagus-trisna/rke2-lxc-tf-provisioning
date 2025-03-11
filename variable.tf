@@ -22,3 +22,8 @@ variable "rke_container" {
     ip      = string 
   }))
 }
+
+variable "ip_network" {
+  type = string
+  default = "" 
+}

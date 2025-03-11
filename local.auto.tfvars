@@ -19,6 +19,8 @@ rke_profiles = [
 
 rke_image = "ubuntu:22.04"
 
+ip_network = "10.10.214.1/24"
+
 rke_container = [ 
   {
     name    = "rke-master-01"
