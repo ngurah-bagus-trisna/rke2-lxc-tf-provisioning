@@ -55,3 +55,13 @@ resource "lxd_instance" "rke_container" {
 
 }
 
+resource "lxd_network" "rke-net" {
+  name = "rke-net"
+
+  config = {
+    "ipv4.address" = "${var.ip_network}"
+    "ipv4.nat"     = "true"
+    "ipv6.address" = "none"
+    "ipv6.nat"     = "false"
+  }
+}
