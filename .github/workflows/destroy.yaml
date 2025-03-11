@@ -1,8 +1,8 @@
-name: Terraform Auto Deploy
+name: Terraform Destroy
 
 on:
   workflow_dispatch:
-    
+
 jobs:
   deploy-lab:
     runs-on: ubuntu-latest
@@ -22,9 +22,3 @@ jobs:
         commands: |
           cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}} && echo 'Destory the old infrastructure'
           tofu destroy -auto-approve
-          rm -rf /home/${{ env.USER }}/lab-rke && mkdir /home/${{ env.USER }}/lab-rke && echo 'Remove & create new directory'
-          cd /home/${{ env.USER }}/lab-rke
-          git clone ${{ github.server_url }}/${{ github.repository }}.git
-          cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}
-          tofu init 
-          tofu apply -auto-approve
