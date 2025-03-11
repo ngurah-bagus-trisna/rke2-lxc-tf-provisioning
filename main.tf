@@ -71,3 +71,21 @@ resource "lxd_instance" "rke_container" {
 
 }
 
+# Gunakan lifecycle agar Terraform tidak langsung menghapus profile sebelum VM dihapus
+resource "null_resource" "destroy_guard" {
+  depends_on = [ lxd_instance.rke_container ]  # Pastikan VM dihapus dulu
+  provisioner "local-exec" {
+    command = "echo 'All VMs destroyed, safe to remove profiles'"
+  }
+}
+
+resource "lxd_profile" "rke_profile_cleanup" {
+  depends_on = [ null_resource.destroy_guard ]  # Hapus profile setelah VM
+  for_each = lxd_profile.rke_profile
+
+  name = each.key
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
