@@ -30,7 +30,7 @@ resource "lxd_profile" "rke_profile" {
     name = "root"
 
     properties = {
-      pool = "nb-disk"
+      pool = "nb-pool-zfs"
       path = "/"
       size = each.value.disk
     }
