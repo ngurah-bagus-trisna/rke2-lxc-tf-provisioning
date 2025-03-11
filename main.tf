@@ -1,9 +1,8 @@
 
 resource "lxd_network" "rke-net" {
   name = "rke-net"
-
+  type = "bridge"
   config = {
-    "type"         = "bridge"
     "ipv4.address" = "${var.ip_network}"
     "ipv4.nat"     = "true"
     "ipv6.address" = "none"
