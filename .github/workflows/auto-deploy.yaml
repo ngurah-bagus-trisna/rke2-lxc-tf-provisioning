@@ -19,6 +19,8 @@ jobs:
         host: ${{ env.HOST }}
         username: ${{ env.USER }}
         private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
+        private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
+        port: 22
         commands: |
           cd /home/${{ env.USER }}/lab-rke/
           tofu destroy -auto-approve
