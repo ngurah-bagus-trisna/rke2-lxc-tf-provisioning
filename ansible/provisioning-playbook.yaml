@@ -1,0 +1,37 @@
+- name: install rke2 binary on master-node
+  hosts: rke_master
+  tasks:
+    - name: add rke-vrrp
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "10.10.214.100 rke-vrrp"
+        state: present
+    - name: download rke2 binary
+      shell: 'curl -sfL https://get.rke2.io | sh -'
+
+- name: install rke2 binary on worker-node
+  hosts: rke_worker
+  tasks:
+    - name: download rke2 binary
+      shell: 'curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -'
+
+- name: init rke2 on master-node
+  hosts: rke-master-01
+  tasks:
+    - name: Create directory for config rke2
+      file:
+        path: /etc/rancher/rke2
+        state: directory
+        mode: 0755 
+
+    - name: copy new rke2 config file
+      ansible.builtin.template:
+        src: rke2-master.j2
+        dest: /etc/rancher/rke2/config.yaml
+        mode: 0644
+
+    - name: start rke2 service
+      service:
+        name: rke2-server
+        state: started
+        enabled: yes

@@ -1,0 +1,6 @@
+tls-san:
+  - rke-vrrp
+  - 10.10.214.100
+node-taint:
+  - "CriticalAddonsOnly=true:NoExecute"
+token: "{{ rke2_token }}"

@@ -1,0 +1,21 @@
+all:
+  vars:
+    ansible_connection: lxd
+    ansible_user: root
+    ansible_become: no
+  children:
+    rke_master:
+      vars:
+        ansible_lxd_remote: local
+        ansible_lxd_project: default
+      hosts:
+        rke-master-01:
+        rke-master-02:
+        rke-master-03:
+    rke_worker:
+      vars:
+        ansible_lxd_remote: local
+        ansible_lxd_project: default
+      hosts:
+        rke-worker-01:
+        rke-worker-02:
