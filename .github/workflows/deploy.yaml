@@ -28,3 +28,5 @@ jobs:
           cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}
           tofu init 
           tofu apply -auto-approve
+          cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}/ansible
+          ansible-playbook --extra-vars "rke2_token=${{ secrets.TOKEN_RKE2 }}" provisioning-playbook.yaml 
