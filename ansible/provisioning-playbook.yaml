@@ -1,19 +1,31 @@
-- name: install rke2 binary on master-node
-  hosts: rke_master
+- name: setup all node 
+  hosts: all
   tasks:
-    - name: add rke-vrrp
+    - name: add rke-vrrp hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
         line: "10.10.214.100 rke-vrrp"
         state: present
+    - name: Expose to path /var/lib/rancher/rke2/bin
+      ansible.builtin.lineinfile:
+        path: /root/.bashrc
+        line: "export PATH=$PATH:/var/lib/rancher/rke2/bin"
+        state: present
+- name: install rke2 binary on master-node
+  hosts: rke_master
+  tasks:
     - name: download rke2 binary
       shell: 'curl -sfL https://get.rke2.io | sh -'
+      args:
+        creates: /usr/local/bin/rke2
 
 - name: install rke2 binary on worker-node
   hosts: rke_worker
   tasks:
     - name: download rke2 binary
       shell: 'curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -'
+      args:
+        creates: /usr/local/bin/rke2
 
 - name: init rke2 on master-node
   hosts: rke-master-01
@@ -23,15 +35,93 @@
         path: /etc/rancher/rke2
         state: directory
         mode: 0755 
-
     - name: copy new rke2 config file
       ansible.builtin.template:
         src: rke2-master.j2
         dest: /etc/rancher/rke2/config.yaml
         mode: 0644
-
     - name: start rke2 service
       service:
         name: rke2-server
+        state: started
+        enabled: yes
+    - name: copy kube-vip daemonsets
+      ansible.builtin.template:
+        src: kube-vip.yaml
+        dest: /root/kube-vip.yaml
+        mode: 0644
+    - name: apply rbac for kube-vip
+      shell: '/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f https://kube-vip.io/manifests/rbac.yaml'
+    - name: apply kube-vip daemonsets
+      shell: '/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f /root/kube-vip.yaml'
+    - name: wait kube-vip up 
+      shell: '/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml wait --for=condition=ready pod -n kube-system -l name=kube-vip-ds --timeout=300s'
+    - name: get kube-vip pod
+      shell: '/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get pods -n kube-system -l name=kube-vip-ds'
+    - name: create kubeconfig directory
+      file: 
+        dest: /root/.kube
+        state: directory
+        mode: 0755
+    - name: copy kubeconfig to /root
+      shell: 'cp /etc/rancher/rke2/rke2.yaml /root/.kube/config'
+    - name: add kubectl completion to /root/.bashrc
+      shell: 'echo "source <(kubectl completion bash)" >> /root/.bashrc'
+
+- name: init rke2 on another master-node
+  hosts: 
+    - rke-master-02
+    - rke-master-03
+  tasks:
+    - name: Create directory for config rke2
+      file: 
+        path: /etc/rancher/rke2
+        state: directory
+        mode: 0755
+    - name: copy new rke2 config file
+      ansible.builtin.template:
+        src: rke2-master.j2
+        dest: /etc/rancher/rke2/config.yaml
+        mode: 0644
+    - name: Add config join to rke-vrrp
+      ansible.builtin.lineinfile:
+        path: /etc/rancher/rke2/config.yaml
+        line: "server: https://rke-vrrp:9345"
+    - name: start rke2 service
+      service:
+        name: rke2-server
+        state: started
+        enabled: yes
+    - name: create kubeconfig directory
+      file: 
+        dest: /root/.kube
+        state: directory
+        mode: 0755
+    - name: copy kubeconfig to /root
+      shell: 'cp /etc/rancher/rke2/rke2.yaml /root/.kube/config'
+    - name: add kubectl completion to /root/.bashrc
+      shell: 'echo "source <(kubectl completion bash)" >> /root/.bashrc'
+
+
+- name: join rke2 on worker-node
+  hosts: rke_worker
+  tasks:
+    - name: Create directory for config rke2
+      file:
+        path: /etc/rancher/rke2
+        state: directory
+        mode: 0755
+    - name: copy new rke2 config file
+      ansible.builtin.template:
+        src: rke2-master.j2
+        dest: /etc/rancher/rke2/config.yaml
+        mode: 0644
+    - name: Add config join to rke-vrrp
+      ansible.builtin.lineinfile:
+        path: /etc/rancher/rke2/config.yaml
+        line: "server: https://rke-vrrp:9345"
+    - name: start rke2 service
+      service:
+        name: rke2-agent
         state: started
         enabled: yes
