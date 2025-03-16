@@ -25,3 +25,5 @@ credentials.tfvars
 # Ignore directories created by Terraform
 .terraform/
 .terraform.lock.hcl
+
+.vscode
