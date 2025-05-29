@@ -2,6 +2,7 @@
 resource "lxd_network" "rke-net" {
   name = "rke-net"
   type = "bridge"
+  target = "nb-ubuntu-desk"
   config = {
     "ipv4.address" = var.ip_network
     "ipv4.nat"     = "true"
