@@ -39,7 +39,7 @@ k3s_container = [
   },
     {
     name    = "k3s-worker-01"
-    profile = "k3s_woker"
+    profile = "k3s-worker"
     ip      = "10.10.214.21"
   },
     {
