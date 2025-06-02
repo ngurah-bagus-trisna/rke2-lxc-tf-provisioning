@@ -17,7 +17,7 @@ k3s_profiles = [
   }
 ]
 
-k3s_image = "ubuntu:22.04"
+k3s_image = "ubuntu:24.04"
 
 ip_network = "10.10.214.1/24"
 
