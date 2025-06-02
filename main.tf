@@ -64,6 +64,7 @@ resource "lxd_instance" "rke_container" {
   image = var.rke_image
   type = "virtual-machine"
   profiles = [ each.value.profile ]
+  target = "nb-ubuntu-desk"
 
   device {
     name = "ens3"
