@@ -9,6 +9,10 @@ resource "lxd_network" "rke-net-2" {
 }
 
 resource "lxd_network" "rke-net" {
+  depends_on = [
+    "lxd_network.rke-net-1",
+    "lxd_network.rke-net-2",
+  ]
   name = "rke-net"
   type = "bridge"
   config = {
