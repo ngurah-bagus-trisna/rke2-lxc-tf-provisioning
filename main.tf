@@ -1,9 +1,9 @@
-resource "lxd_network" "rke-net" {
+resource "lxd_network" "rke-net-1" {
   name = "rke-net"
   target = "nb-think-ubuntu"
 }
 
-resource "lxd_network" "rke-net" {
+resource "lxd_network" "rke-net-2" {
   name = "rke-net"
   target = "nb-ubuntu-desk"
 }
