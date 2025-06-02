@@ -1,4 +1,4 @@
-variable "rke_profiles" {
+variable "k3s_profiles" {
   type = list(object({
     name = string
     limits = object({
@@ -9,13 +9,13 @@ variable "rke_profiles" {
   }))
 }
 
-variable "rke_image" {
+variable "k3s_image" {
   type = string
   default = "ubuntu:22.04"
   
 }
 
-variable "rke_container" {
+variable "k3s_container" {
   type = list(object({
     name    = string
     profile = string

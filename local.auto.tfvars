@@ -1,6 +1,6 @@
-rke_profiles = [
+k3s_profiles = [
   {
-    name = "rke_master"
+    name = "k3s_master"
     limits = {
       cpu    = 4
       memory = "4GiB"
@@ -8,7 +8,7 @@ rke_profiles = [
     }
   },
   {
-    name = "rke_worker"
+    name = "k3s_wok3sr"
     limits = {
       cpu    = 6
       memory = "6GiB"
@@ -17,34 +17,34 @@ rke_profiles = [
   }
 ]
 
-rke_image = "ubuntu:22.04"
+k3s_image = "ubuntu:22.04"
 
 ip_network = "10.10.214.1/24"
 
-rke_container = [ 
+k3s_container = [ 
   {
-    name    = "rke-master-01"
-    profile = "rke_master"
+    name    = "k3s-master-01"
+    profile = "k3s_master"
     ip      = "10.10.214.10"
   },
     {
-    name    = "rke-master-02"
-    profile = "rke_master"
+    name    = "k3s-master-02"
+    profile = "k3s_master"
     ip      = "10.10.214.11"
   },
     {
-    name    = "rke-master-03"
-    profile = "rke_master"
+    name    = "k3s-master-03"
+    profile = "k3s_master"
     ip      = "10.10.214.12"
   },
     {
-    name    = "rke-worker-01"
-    profile = "rke_worker"
+    name    = "k3s-wok3sr-01"
+    profile = "k3s_wok3sr"
     ip      = "10.10.214.21"
   },
     {
-    name    = "rke-worker-02"
-    profile = "rke_worker"
+    name    = "k3s-wok3sr-02"
+    profile = "k3s_wok3sr"
     ip      = "10.10.214.22"
   },
 ]

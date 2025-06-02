@@ -1,19 +1,19 @@
-resource "lxd_network" "rke-net-1" {
-  name = "rke-net"
+resource "lxd_network" "k3s-net-1" {
+  name = "k3s-net"
   target = "nb-think-ubuntu"
 }
 
-resource "lxd_network" "rke-net-2" {
-  name = "rke-net"
+resource "lxd_network" "k3s-net-2" {
+  name = "k3s-net"
   target = "nb-ubuntu-desk"
 }
 
-resource "lxd_network" "rke-net" {
+resource "lxd_network" "k3s-net" {
   depends_on = [
-    "lxd_network.rke-net-1",
-    "lxd_network.rke-net-2",
+    "lxd_network.k3s-net-1",
+    "lxd_network.k3s-net-2",
   ]
-  name = "rke-net"
+  name = "k3s-net"
   type = "bridge"
   config = {
     "ipv4.address" = var.ip_network
@@ -22,14 +22,14 @@ resource "lxd_network" "rke-net" {
     "ipv6.nat"     = "false"
   }
   provisioner "local-exec" {
-    command = "sudo firewall-cmd --add-interface=rke-net --zone=libvirt-routed --permanent && sudo firewall-cmd --reload"
+    command = "sudo firewall-cmd --add-interface=k3s-net --zone=libvirt-routed --permanent && sudo firewall-cmd --reload"
   }
 }
 
-resource "lxd_profile" "rke_profile" {
-  depends_on = [ lxd_network.rke-net ]
+resource "lxd_profile" "k3s_profile" {
+  depends_on = [ lxd_network.k3s-net ]
   for_each = {
-    for profile in var.rke_profiles :
+    for profile in var.k3s_profiles :
     profile.name => profile.limits
   }
 
@@ -52,16 +52,16 @@ resource "lxd_profile" "rke_profile" {
   }
 }
 
-resource "lxd_instance" "rke_container" {
-  depends_on = [ lxd_profile.rke_profile, lxd_network.rke-net ]
+resource "lxd_instance" "k3s_container" {
+  depends_on = [ lxd_profile.k3s_profile, lxd_network.k3s-net ]
 
   for_each = {
-    for container in var.rke_container :
+    for container in var.k3s_container :
     container.name => container
   }
 
   name = each.key
-  image = var.rke_image
+  image = var.k3s_image
   type = "virtual-machine"
   profiles = [ each.value.profile ]
   target = "nb-ubuntu-desk"
@@ -70,7 +70,7 @@ resource "lxd_instance" "rke_container" {
     name = "ens3"
     type = "nic"
     properties = {
-      network = "rke-net"
+      network = "k3s-net"
       "ipv4.address" = each.value.ip
     }
   }
