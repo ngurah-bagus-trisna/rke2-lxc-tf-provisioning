@@ -11,7 +11,7 @@ variable "k3s_profiles" {
 
 variable "k3s_image" {
   type = string
-  default = "ubuntu:22.04"
+  default = "ubuntu:24.04"
   
 }
 

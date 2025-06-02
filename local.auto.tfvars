@@ -2,16 +2,16 @@ k3s_profiles = [
   {
     name = "k3s_master"
     limits = {
-      cpu    = 4
+      cpu    = 2
       memory = "4GiB"
       disk   = "50GiB"
     }
   },
   {
-    name = "k3s_wok3sr"
+    name = "k3s_worker"
     limits = {
-      cpu    = 6
-      memory = "6GiB"
+      cpu    = 4
+      memory = "4GiB"
       disk   = "50GiB"
     }
   }
@@ -38,13 +38,13 @@ k3s_container = [
     ip      = "10.10.214.12"
   },
     {
-    name    = "k3s-wok3sr-01"
-    profile = "k3s_wok3sr"
+    name    = "k3s-worker-01"
+    profile = "k3s_woker"
     ip      = "10.10.214.21"
   },
     {
-    name    = "k3s-wok3sr-02"
-    profile = "k3s_wok3sr"
+    name    = "k3s-worker-02"
+    profile = "k3s_worker"
     ip      = "10.10.214.22"
   },
 ]
