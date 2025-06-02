@@ -25,8 +25,8 @@ jobs:
           rm -rf /home/${{ env.USER }}/lab-rke && mkdir /home/${{ env.USER }}/lab-rke && echo 'Remove & create new directory'
           cd /home/${{ env.USER }}/lab-rke
           git clone ${{ github.server_url }}/${{ github.repository }}.git
-          git checkout k3s-lab
           cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}
+          git checkout k3s-lab
           tofu init 
           tofu apply -auto-approve
           #cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}/ansible
