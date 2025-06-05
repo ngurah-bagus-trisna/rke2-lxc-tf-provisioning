@@ -22,29 +22,19 @@ jobs:
           private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
           port: 22
           commands: |
-            echo "🧹 Destroying old infrastructure (if exists)..."
             cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}} && tofu destroy -auto-approve || true
-
-            echo "🗑️ Resetting directory..."
             rm -rf /home/${{ env.USER }}/lab-rke
             mkdir -p /home/${{ env.USER }}/lab-rke
-
-            echo "📥 Cloning repository..."
             cd /home/${{ env.USER }}/lab-rke
             git clone ${{ github.server_url }}/${{ github.repository }}.git
             cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}
             git checkout k3s-lab
 
-            echo "🔐 Writing SSH public key to terraform.auto.tfvars..."
-            echo ssh_public_key = "${TF_VAR_ssh_public_key}" >> terraform.auto.tfvars
+            echo "ssh_public_key = \"${TF_VAR_ssh_public_key}\"" | tee terraform.auto.tfvars > /dev/null
 
-            echo "🚀 Running Terraform..."
             tofu init
             tofu apply -auto-approve
 
-            echo "📦 Installing Ansible collection for K3s..."
             ansible-galaxy collection install git+https://github.com/k3s-io/k3s-ansible.git
-
-            echo "📡 Running Ansible playbook..."
             cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}/ansible
             ansible-playbook k3s.orchestration.site -i hosts.yml --extra-vars "secrets={'TOKEN_K3S': '${{ secrets.TOKEN_K3S }}'}"
