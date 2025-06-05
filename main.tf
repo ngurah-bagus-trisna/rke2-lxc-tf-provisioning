@@ -66,7 +66,12 @@ resource "lxd_instance" "k3s_container" {
   profiles = [ each.value.profile ]
   target = "nb-ubuntu-desk"
   config = {
-    cloud-init.ssh-keys.mykey = "ubuntu:gh:ngurah-bagus-trisna"
+    "user.user-data" = <<EOF
+#cloud-config
+ssh_authorized_keys:
+  - ${var.ssh_public_key}
+hostname: ${each.key}
+EOF
   }
 
   device {
