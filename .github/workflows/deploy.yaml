@@ -36,7 +36,7 @@ jobs:
             git checkout k3s-lab
 
             echo "🔐 Writing SSH public key to terraform.auto.tfvars..."
-            echo "ssh_public_key = \"${TF_VAR_ssh_public_key}\"" > terraform.auto.tfvars
+            echo ssh_public_key = \"${TF_VAR_ssh_public_key}\" > terraform.auto.tfvars
 
             echo "🚀 Running Terraform..."
             tofu init
