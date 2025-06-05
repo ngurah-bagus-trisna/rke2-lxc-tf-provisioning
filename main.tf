@@ -65,6 +65,9 @@ resource "lxd_instance" "k3s_container" {
   type = "virtual-machine"
   profiles = [ each.value.profile ]
   target = "nb-ubuntu-desk"
+  config = {
+    cloud-init.ssh-keys.mykey = "ubuntu:gh:ngurah-bagus-trisna"
+  }
 
   device {
     name = "ens3"
