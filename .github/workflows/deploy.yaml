@@ -22,7 +22,7 @@ jobs:
           private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
           port: 22
           commands: |
-            cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}} && tofu destroy -auto-approve || true
+            cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}} && tofu destroy -auto-approve 
             rm -rf /home/${{ env.USER }}/lab-rke
             mkdir -p /home/${{ env.USER }}/lab-rke
             cd /home/${{ env.USER }}/lab-rke
