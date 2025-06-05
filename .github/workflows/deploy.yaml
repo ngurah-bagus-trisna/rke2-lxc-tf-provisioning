@@ -30,7 +30,7 @@ jobs:
             cd /home/${{ env.USER }}/lab-rke/${{ env.REPO_NAME}}
             git checkout k3s-lab
 
-            echo ssh_public_key = "${TF_VAR_ssh_public_key}" | tee -a terraform.auto.tfvars > /dev/null
+            echo 'ssh_public_key = \"${{ env.TF_VAR_ssh_public_key }}\"' | tee -a local.auto.tfvars > /dev/null 
 
             tofu init
             tofu apply -auto-approve
