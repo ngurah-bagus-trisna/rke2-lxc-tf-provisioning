@@ -49,3 +49,4 @@ k3s_container = [
   },
 ]
 
+pool = "nb-zfs"

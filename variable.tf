@@ -32,3 +32,8 @@ variable "ssh_public_key" {
   description = "SSH public key for cloud-init"
   type        = string
 }
+
+variable "pool" {
+  description = "LXD Pool"
+  type = string
+}

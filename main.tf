@@ -45,7 +45,7 @@ resource "lxd_profile" "k3s_profile" {
     type = "disk"
     name = "root"
     properties = {
-      pool = "nb-pool-zfs"
+      pool = var.pool
       path = "/"
       size = each.value.disk
     }
