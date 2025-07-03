@@ -49,4 +49,4 @@ k3s_container = [
   },
 ]
 
-pool = "nb-zfs"
+pool = "prod-brtfs"
