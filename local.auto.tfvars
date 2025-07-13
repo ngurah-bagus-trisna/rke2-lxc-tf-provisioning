@@ -19,33 +19,33 @@ k3s_profiles = [
 
 k3s_image = "ubuntu:24.04"
 
-ip_network = "10.10.214.1/24"
+ip_network = "240.0.0.0/8"
 
 k3s_container = [ 
   {
     name    = "k3s-master-01"
     profile = "k3s_master"
-    ip      = "10.10.214.10"
+    ip      = "240.10.0.10"
   },
     {
     name    = "k3s-master-02"
     profile = "k3s_master"
-    ip      = "10.10.214.11"
+    ip      = "240.10.0.11"
   },
     {
     name    = "k3s-master-03"
     profile = "k3s_master"
-    ip      = "10.10.214.12"
+    ip      = "240.10.0.12"
   },
     {
     name    = "k3s-worker-01"
     profile = "k3s_worker"
-    ip      = "10.10.214.21"
+    ip      = "240.10.0.21"
   },
     {
     name    = "k3s-worker-02"
     profile = "k3s_worker"
-    ip      = "10.10.214.22"
+    ip      = "240.10.0.22"
   },
 ]
 
